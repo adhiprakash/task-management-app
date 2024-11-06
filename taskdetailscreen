@@ -1,0 +1,37 @@
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+
+class TaskDetailScreen extends StatelessWidget {
+  final int taskIndex;
+
+  TaskDetailScreen({required this.taskIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    final box = Hive.box('tasks');
+    final task = box.getAt(taskIndex);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(task['title'])),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text('Description: ${task['description']}'),
+            CheckboxListTile(
+              title: Text('Completed'),
+              value: task['isDone'],
+              onChanged: (value) {
+                box.putAt(taskIndex, {
+                  'title': task['title'],
+                  'description': task['description'],
+                  'isDone': value,
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
