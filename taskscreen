@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+
+class AddTaskScreen extends StatefulWidget {
+  @override
+  _AddTaskScreenState createState() => _AddTaskScreenState();
+}
+
+class _AddTaskScreenState extends State<AddTaskScreen> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  void _saveTask() {
+    final box = Hive.box('tasks');
+    box.add({
+      'title': _titleController.text,
+      'description': _descriptionController.text,
+      'isDone': false,
+    });
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Add Task')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(labelText: 'Title'),
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: _saveTask, child: Text('Save Task')),
+          ],
+        ),
+      ),
+    );
+  }
+}
