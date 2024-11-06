@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+class TaskListScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Task Manager')),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box('tasks').listenable(),
+        builder: (context, Box box, _) {
+          if (box.isEmpty) return Center(child: Text('No tasks available.'));
+          return ListView.builder(
+            itemCount: box.length,
+            itemBuilder: (context, index) {
+              final task = box.getAt(index);
+              return ListTile(
+                title: Text(task['title']),
+                subtitle: Text(task['description']),
+                trailing: Checkbox(
+                  value: task['isDone'],
+                  onChanged: (value) {
+                    box.putAt(index, {'title': task['title'], 'description': task['description'], 'isDone': value});
+                  },
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, '/taskDetail', arguments: index);
+                },
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/addTask'),
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
